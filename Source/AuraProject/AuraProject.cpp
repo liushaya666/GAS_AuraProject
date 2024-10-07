@@ -1,4 +1,4 @@
-// Copyright liusha
+// Copyright LiuSha
 
 #include "AuraProject.h"
 #include "Modules/ModuleManager.h"
