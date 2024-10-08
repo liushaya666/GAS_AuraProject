@@ -28,6 +28,7 @@ public:
 	/* Combat Interface*/
 	virtual int32 GetPlayerLevel() override;
 	/* end Combat Interface*/
+	
     UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnHealthChanged;
 	UPROPERTY(BlueprintAssignable)
