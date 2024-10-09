@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "Character/AuraCharacterBase.h"
 #include "Interaction/EnemyInterface.h"
-#include "UI/WidgetController/OverlayWidgetController.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "AuraEnemy.generated.h"
 
+struct FGameplayTag;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedDelegate, float, NewValue);
 
 
 class UWidgetComponent;
@@ -31,9 +32,15 @@ public:
 	/* end Combat Interface*/
 	
     UPROPERTY(BlueprintAssignable)
-	FOnAttributeChangedSignature OnHealthChanged;
+	FOnAttributeChangedDelegate OnHealthChanged;
 	UPROPERTY(BlueprintAssignable)
-	FOnAttributeChangedSignature OnMaxHealthChanged;
+	FOnAttributeChangedDelegate OnMaxHealthChanged;
+
+	void HitReactTagChanged(const FGameplayTag CallBackTag, int32 NewCount);
+	
+    UPROPERTY(BlueprintReadOnly, Category="Combat")
+	bool bHitReacting = false;
+	float BaseWalkSpeed = 250.F;
 	
 protected:
 	virtual void BeginPlay() override;
