@@ -25,6 +25,10 @@ public:
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
+	virtual void Die() override;
+	
+	UFUNCTION(NetMulticast, reliable)
+	virtual void MulticastHandleDeath();
 protected:
 	virtual void BeginPlay() override;
 
@@ -57,7 +61,20 @@ protected:
 	virtual void InitializeDefaultAttributes() const;
 
 	void AddCharacterAbilities() ;
+    /* Dissolve Effect */
 
+	void Dissolve();
+	UFUNCTION(BlueprintImplementableEvent)
+	void StartMeshDissolveTimeline(UMaterialInstanceDynamic* DynamicMaterialInstance);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void StartWeaponDissolveTimeline(UMaterialInstanceDynamic* DynamicMaterialInstance);
+	
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Combat")
+	TObjectPtr<UMaterialInstance> MeshDissolveMaterialInstance;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Combat")
+	TObjectPtr<UMaterialInstance> WeaponDissolveMaterialInstance;
 private:
 	UPROPERTY(EditAnywhere,Category="GAS|Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
