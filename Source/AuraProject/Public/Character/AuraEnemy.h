@@ -6,10 +6,11 @@
 #include "Character/AuraCharacterBase.h"
 #include "Interaction/EnemyInterface.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
+#include "UI/WidgetController/OverlayWidgetController.h"
 #include "AuraEnemy.generated.h"
 
 struct FGameplayTag;
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedDelegate, float, NewValue);
+
 
 
 class UWidgetComponent;
@@ -33,9 +34,9 @@ public:
 	/* end Combat Interface*/
 	
     UPROPERTY(BlueprintAssignable)
-	FOnAttributeChangedDelegate OnHealthChanged;
+	FOnAttributeChangedSignature OnHealthChanged;
 	UPROPERTY(BlueprintAssignable)
-	FOnAttributeChangedDelegate OnMaxHealthChanged;
+	FOnAttributeChangedSignature OnMaxHealthChanged;
 
 	void HitReactTagChanged(const FGameplayTag CallBackTag, int32 NewCount);
 	
