@@ -4,6 +4,7 @@
 #include "AbilitySystem/ExecCalc/ExecCalc_Damage.h"
 
 #include "AbilitySystemComponent.h"
+#include "AuraAbilityTypes.h"
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/AuraAttributeSet.h"
@@ -72,9 +73,13 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	float TargetBlockChance = 0.f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().BlockChanceDef,EvaluationParameters,TargetBlockChance);
 	TargetBlockChance = FMath::Max<float>(TargetBlockChance,0.f);
-	//If Block,halve the damage.
+	
 	const bool bBlocked = FMath::RandRange(1,100) < TargetBlockChance;
+	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
+    UAuraAbilitySystemLibrary::SetIsBlockedHit(EffectContextHandle,bBlocked);
+	//If Block,halve the damage.
 	Damage = bBlocked ? Damage / 2.f : Damage;
+
 	
 	float TargetArmor = 0.f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().ArmorDef,EvaluationParameters,TargetArmor);
@@ -91,12 +96,13 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	//ArmorPenetration ignores a percentage of the Target's Armor.
 	const float EffectiveArmor = TargetArmor * (100 - SourceArmorPenetration * ArmorPenetrationCoefficient) / 100.f;
     const FRealCurve* EffectiveArmorCurve = CharacterClassInfo->DamageCalculationCoefficients->FindCurve(FName("EffectiveArmor"),FString());
-	EffectiveArmorCurve->Eval(TargetCombatInterface->GetPlayerLevel());
 	const float EffectiveArmorCoefficient = EffectiveArmorCurve->Eval(TargetCombatInterface->GetPlayerLevel());
+
 	
 	//Armor ignores a percentage of incoming damage.
 	Damage *= (100 - EffectiveArmor * EffectiveArmorCoefficient) / 100.f;
-    
+
+	
 	float SourceCriticalHitChance = 0.f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalHitChanceDef,EvaluationParameters,SourceCriticalHitChance);
 	SourceCriticalHitChance = FMath::Max<float>(SourceCriticalHitChance,0.f);
@@ -110,12 +116,14 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	TargetCriticalHitResistance = FMath::Max<float>(TargetCriticalHitResistance,0.f);
 
 	const FRealCurve* EffectiveCriticalHitResistanceCurve = CharacterClassInfo->DamageCalculationCoefficients->FindCurve(FName("CriticalHitResistance"),FString());
-	EffectiveCriticalHitResistanceCurve->Eval(TargetCombatInterface->GetPlayerLevel());
 	const float EffectiveCriticalHitResistanceCoefficient = EffectiveCriticalHitResistanceCurve->Eval(TargetCombatInterface->GetPlayerLevel());
 	
 	//Critical Hit Resistance reduces Critical Hit Chance by a certain percentage.
 	const float EffectiveCriticalHitChance = SourceCriticalHitChance - TargetCriticalHitResistance * EffectiveCriticalHitResistanceCoefficient;
 	const bool bCriticalHit = FMath::RandRange(1,100) < EffectiveCriticalHitChance;
+	UAuraAbilitySystemLibrary::SetIsCriticalHit(EffectContextHandle,bCriticalHit);
+
+	
 	//Double Damage plus a bonus if critical hit
 	Damage = bCriticalHit ? 2.f * Damage + SourceCriticalHitDamage : Damage;
 	
