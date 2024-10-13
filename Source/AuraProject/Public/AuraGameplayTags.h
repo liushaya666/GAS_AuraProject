@@ -22,6 +22,7 @@ public:
 	FGameplayTag Attributes_Primary_Intelligence;
 	FGameplayTag Attributes_Primary_Resilience;
 	FGameplayTag Attributes_Primary_Vigor;
+	
 	/*
 	 * Secondary Attributes
 	 */
@@ -56,6 +57,13 @@ public:
 	FGameplayTag Damage_Lightning;
 	FGameplayTag Damage_Arcane;
 	FGameplayTag Damage_Physical;
+	
+	FGameplayTag Abilities_Attack;
+
+	FGameplayTag Montage_Attack_Weapon;
+	FGameplayTag Montage_Attack_RightHand;
+	FGameplayTag Montage_Attack_LeftHand;
+	
     
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistance;
 	FGameplayTag Effects_HitReact;
