@@ -8,6 +8,7 @@
 #include "Interaction/CombatInterface.h"
 #include "AuraCharacterBase.generated.h"
 
+class UNiagaraSystem;
 class UGameplayAbility;
 class UGameplayEffect;
 class UAttributeSet;
@@ -26,10 +27,12 @@ public:
 	/** Combat Interface*/
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 	virtual void Die() override;
-	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag) override;
+	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& SocketTag) override;
 	virtual bool IsDead_Implementation() const override;
 	virtual AActor* GetAvatar_Implementation() override;
 	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override;
+	virtual UNiagaraSystem* GetBloodEffect_Implementation() override;
+	virtual FTaggedMontage GetTaggedMontageByTag_Implementation(const FGameplayTag& MontageTag) override;
 	/** End Combat Interface*/
 	
 	UFUNCTION(NetMulticast, reliable)
@@ -39,7 +42,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere,Category="Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
 
 	UPROPERTY(EditAnywhere,Category="Combat")
@@ -74,7 +77,6 @@ protected:
 
 	void AddCharacterAbilities() ;
     /** Dissolve Effect */
-
 	void Dissolve();
 	UFUNCTION(BlueprintImplementableEvent)
 	void StartMeshDissolveTimeline(UMaterialInstanceDynamic* DynamicMaterialInstance);
@@ -87,6 +89,11 @@ protected:
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Combat")
 	TObjectPtr<UMaterialInstance> WeaponDissolveMaterialInstance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly,Category="Combat")
+	UNiagaraSystem* BloodEffect;
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Combat")
+	USoundBase* DeathSound;
 private:
 	UPROPERTY(EditAnywhere,Category="GAS|Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
