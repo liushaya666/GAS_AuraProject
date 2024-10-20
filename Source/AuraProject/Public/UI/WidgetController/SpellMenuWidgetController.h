@@ -8,7 +8,7 @@
 #include "GameplayTagContainer.h"
 #include "SpellMenuWidgetController.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSpellGlobeSelectedSignature, bool , bSpendPointsButtonEnabled, bool, bEquipButtonEnabled);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FSpellGlobeSelectedSignature, bool , bSpendPointsButtonEnabled, bool, bEquipButtonEnabled, FString, DescriptionString, FString, NextLevelDescriptionString);
 
 struct FSelectedAbility
 {
@@ -34,6 +34,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SpellGlobeSelected(const FGameplayTag& AbilityTag);
+	
+	UFUNCTION(BlueprintCallable)
+	void SpendPointButtonPressed();
+
+	UFUNCTION(BlueprintCallable)
+	void GlobeDeselect();
 private:
 	static void ShouldEnableButtons(const FGameplayTag& AbilityStatus, int32 SpellPoints, bool& bShouldEnabledSpellPointsButton, bool& bShouldEnabledEquipButton);
 	FSelectedAbility SelectedAbility = {FAuraGameplayTags::Get().Abilities_None, FAuraGameplayTags::Get().Abilities_Status_Locked};

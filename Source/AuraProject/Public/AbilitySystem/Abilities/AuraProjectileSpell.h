@@ -16,6 +16,7 @@ UCLASS()
 class AURAPROJECT_API UAuraProjectileSpell : public UAuraDamageGameplayAbility
 {
 	GENERATED_BODY()
+
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
    
@@ -25,5 +26,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<AAuraProjectile> ProjectileClass;
 
-
+	UPROPERTY(EditDefaultsOnly)
+    int32 NumProjectiles = 5;
 };
