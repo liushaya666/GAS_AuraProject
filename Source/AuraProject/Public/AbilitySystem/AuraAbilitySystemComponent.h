@@ -53,6 +53,7 @@ public:
 	UFUNCTION(Server, Reliable)
 	void SeverEquipAbility(const FGameplayTag& AbilityTag, const FGameplayTag& Slot);
 
+	UFUNCTION(Client, reliable)
 	void ClientEquipAbility(const FGameplayTag& AbilityTag, const FGameplayTag& Status, const FGameplayTag& Slot, const FGameplayTag& PreviousSlot);
 
 	bool GetDescriptionsByAbilityTag(const FGameplayTag& AbilityTag, FString& OutDescription, FString& OutNextLevelDescription);
