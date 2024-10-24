@@ -11,7 +11,7 @@ UDebuffNiagaraComponent::UDebuffNiagaraComponent()
 {
 	bAutoActivate = false;
 }
-
+	
 void UDebuffNiagaraComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -22,9 +22,9 @@ void UDebuffNiagaraComponent::BeginPlay()
 	}
 	else if (CombatInterface)
 	{
-		CombatInterface->GetOnASCRegisteredDelegate().AddWeakLambda(this,[this](UAbilitySystemComponent* InASC)
+		CombatInterface->GetOnASCRegisteredDelegate().AddWeakLambda(this,[this](UAbilitySystemComponent* NewASC)
 		{
-			InASC->RegisterGameplayTagEvent(DebuffTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &UDebuffNiagaraComponent::DebuffTagChanged);
+			NewASC->RegisterGameplayTagEvent(DebuffTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &UDebuffNiagaraComponent::DebuffTagChanged);
 		});
 	}
 	if (CombatInterface)

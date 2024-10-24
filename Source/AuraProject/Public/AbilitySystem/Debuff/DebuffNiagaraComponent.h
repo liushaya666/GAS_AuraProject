@@ -27,3 +27,4 @@ protected:
 	UFUNCTION()
 	void OnOwnerDeath(AActor* DeathActor);
 };
+	
