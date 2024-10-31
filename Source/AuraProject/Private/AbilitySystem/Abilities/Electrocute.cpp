@@ -46,7 +46,7 @@ FString UElectrocute::GetDescription(int32 Level)
 	Level,
 	ManaCost,
 	Cooldown,
-	FMath::Min(Level, MaxNumShockTargets),
+	FMath::Min(Level, MaxNumShockTargets - 1),
 	ScaledDamage);
 	
 }
@@ -69,10 +69,10 @@ FString UElectrocute::GetNextLevelDescription(int32 Level)
 	"<Default>Emits a beam of lighting, "
 	"propagating to %d additional targets nearby, causing: </>"
 	//Damage
-	"<Damage>%d</><Default> fire damage with a chance to burn</>"),
+	"<Damage>%d</><Default> lightning damage with a chance to stun</>"),
 	Level,
 	ManaCost,
 	Cooldown,
-	FMath::Min(Level, MaxNumShockTargets),
+	FMath::Min(Level, MaxNumShockTargets - 1),
 	ScaledDamage);
 }

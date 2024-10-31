@@ -20,7 +20,7 @@ FString UArcaneShards::GetDescription(int32 Level)
 			//Cooldown
 			"<Small>Cooldown: </><Cooldown>%.1f</>\n>"
 			//Description
-			"<Default>Summon shards of arcane energy, "
+			"<Default>Summon a shard of arcane energy, "
 			"causing radial arcane damage of: </>"
 			//Damage
 			"<Damage>%d</><Default> at the shard origin</>"),
@@ -39,14 +39,14 @@ FString UArcaneShards::GetDescription(int32 Level)
 	//Cooldown
 	"<Small>Cooldown: </><Cooldown>%.1f</>\n>"
 	//Description
-	"<Default>Summon %d shards of arcane shards, "
+	"<Default>Summon %d shards of arcane energy, "
 	"causing radial arcane damage of: </>"
 	//Damage
-	"<Damage>%d</><Default> at the shard origin</>"),
+	"<Damage>%d</><Default> at the shard origins</>"),
 	Level,
 	ManaCost,
 	Cooldown,
-	FMath::Min(Level, MaxNumShards - 1),
+	FMath::Min(Level, MaxNumShards),
 	ScaledDamage);
 	
 }
@@ -66,13 +66,13 @@ FString UArcaneShards::GetNextLevelDescription(int32 Level)
 	//Cooldown
 	"<Small>Cooldown: </><Cooldown>%.1f</>\n"
 	//Description
-	"<Default>Summon %d shards of arcane shards, "
-	"propagating to %d additional targets nearby, causing radial arcane damage of: </>"
+	"<Default>Summon %d shards of arcane energy, "
+	"causing radial arcane damage of: </>"
 	//Damage
-	"<Damage>%d</><Default> at the shard origin</>"),
+	"<Damage>%d</><Default> at the shard origins</>"),
 	Level,
 	ManaCost,
 	Cooldown,
-	FMath::Min(Level, MaxNumShards - 1),
+	FMath::Min(Level, MaxNumShards),
 	ScaledDamage);
 }
