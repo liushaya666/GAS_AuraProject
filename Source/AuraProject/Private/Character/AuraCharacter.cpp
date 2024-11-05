@@ -11,8 +11,10 @@
 #include "Player/AuraPlayerController.h"
 #include "Player/AuraPlayerState.h"
 #include "NiagaraComponent.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "AbilitySystem/AuraAttributeSet.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
 #include "Camera/CameraComponent.h"
-#include "Game/AuraGameInstance.h"
 #include "Game/AuraGameModeBase.h"
 #include "Game/LoadScreenSaveGame.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -50,7 +52,38 @@ void AAuraCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 	//Init ability actor info for the Server
 	InitAbilityActorInfo();
-	AddCharacterAbilities();
+	LoadProgress();
+}
+
+//加载数据
+void AAuraCharacter::LoadProgress()
+{
+	AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this));
+	if (AuraGameMode)
+	{
+		ULoadScreenSaveGame* SaveData = AuraGameMode->RetrieveInGameSaveData();
+		if(SaveData == nullptr) return;
+		if (SaveData->bFirstTimeLoadIn)
+		{
+			InitializeDefaultAttributes();
+			AddCharacterAbilities();
+		}
+		else
+		{
+			if (UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))
+			{
+				AuraASC->AddCharacterAbilitiesFromSaveData(SaveData);
+			}
+			if (AAuraPlayerState* AuraPlayerState = Cast<AAuraPlayerState>(GetPlayerState()))
+			{
+				AuraPlayerState->SetLevel(SaveData->PlayerLevel);
+				AuraPlayerState->SetXP(SaveData->XP);
+				AuraPlayerState->SetSpellPoints(SaveData->SpellPoints);
+				AuraPlayerState->SetAttributePoints(SaveData->AttributePoints);
+			}
+			UAuraAbilitySystemLibrary::InitializeDefaultAttributesFromSaveData(this, AbilitySystemComponent, SaveData);
+		}
+	}
 }
 
 void AAuraCharacter::OnRep_PlayerState()
@@ -168,7 +201,7 @@ void AAuraCharacter::HideMagicCircle_Implementation()
 
 	}
 }
-
+//保存数据
 void AAuraCharacter::SaveProgress_Implementation(const FName& CheckpointTag)
 {
 	AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this));
@@ -177,6 +210,42 @@ void AAuraCharacter::SaveProgress_Implementation(const FName& CheckpointTag)
 		ULoadScreenSaveGame* SaveData = AuraGameMode->RetrieveInGameSaveData();
 		if(SaveData == nullptr) return;
 		SaveData->PlayerStartTag = CheckpointTag;
+		if (AAuraPlayerState* AuraPlayerState = Cast<AAuraPlayerState>(GetPlayerState()))
+		{
+			SaveData->PlayerLevel = AuraPlayerState->GetPlayerLevel();
+			SaveData->XP = AuraPlayerState->GetXP();
+			SaveData->SpellPoints = AuraPlayerState->GetSpellPoints();
+			SaveData->AttributePoints = AuraPlayerState->GetAttributePoints();
+		}
+		SaveData->Strength = UAuraAttributeSet::GetStrengthAttribute().GetNumericValue(GetAttributeSet());
+		SaveData->Intelligence = UAuraAttributeSet::GetIntelligenceAttribute().GetNumericValue(GetAttributeSet());
+		SaveData->Resilience = UAuraAttributeSet::GetResilienceAttribute().GetNumericValue(GetAttributeSet());
+		SaveData->Vigor = UAuraAttributeSet::GetVigorAttribute().GetNumericValue(GetAttributeSet());
+		SaveData->bFirstTimeLoadIn = false;
+
+		if(!HasAuthority()) return;
+		UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent);
+		FForEachAbility SaveAbilityDelegate;
+		SaveData->SavedAbilities.Empty();
+		SaveAbilityDelegate.BindLambda([this, AuraASC, SaveData](const FGameplayAbilitySpec& AbilitySpec)
+		{
+			const FGameplayTag AbilityTag = AuraASC->GetAbilityTagFromSpec(AbilitySpec);
+			UAbilityInfo* AbilityInfo = UAuraAbilitySystemLibrary::GetAbilityInfo(this);
+			FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoForTag(AbilityTag);
+			
+			FSaveAbility SaveAbility;
+			SaveAbility.GameplayAbility = Info.Ability;
+			SaveAbility.AbilityLevel = AbilitySpec.Level;
+			SaveAbility.AbilityStatus = AuraASC->GetStatusFromAbilityTag(AbilityTag);
+			SaveAbility.AbilitySlot = AuraASC->GetSlotFromAbilityTag(AbilityTag);
+			SaveAbility.AbilityTag = AbilityTag;
+			SaveAbility.AbilityType = Info.AbilityType;
+			
+			SaveData->SavedAbilities.AddUnique(SaveAbility);
+			
+		});
+		AuraASC->ForEachAbility(SaveAbilityDelegate);
+		
 		AuraGameMode->SaveInGameProgressData(SaveData);
 	}
 }
@@ -205,7 +274,7 @@ void AAuraCharacter::InitAbilityActorInfo()
 			AuraHUD->InitOverlay(AuraPlayerController,AuraPlayerState,AbilitySystemComponent,AttributeSet);
 		}
 	}
-	InitializeDefaultAttributes();
+	//InitializeDefaultAttributes();
 
 }
 

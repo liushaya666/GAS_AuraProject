@@ -43,6 +43,8 @@ public:
 	virtual int32 GetPlayerLevel_Implementation() override;
 	/** end Combat Interface*/
 
+	void LoadProgress();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UNiagaraComponent> LevelUpNiagaraComponent;
 private:
