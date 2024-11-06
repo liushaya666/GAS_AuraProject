@@ -65,6 +65,8 @@ public:
 
 	UPROPERTY(Replicated, BlueprintReadOnly)
 	bool bIsBeingShocked = false;
+
+	void SetCharcaterClass(ECharacterClass InClass) {CharacterClass = InClass;}
 protected:
 	virtual void BeginPlay() override;
 

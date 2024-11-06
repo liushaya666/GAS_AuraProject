@@ -14,6 +14,7 @@ class AURAPROJECT_API AMapEntrance : public ACheckPoint
 {
 	GENERATED_BODY()
 public:
+	AMapEntrance(const FObjectInitializer& ObjectInitializer);
 	/*Highlight Interface*/
 	virtual void HighlightActor_Implementation() override;
 	/*UnHighlight Interface*/
