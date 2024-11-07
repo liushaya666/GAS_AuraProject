@@ -26,8 +26,6 @@ public:
 
 	void InitializeSlot();
 	
-
-
 	UPROPERTY()
 	int32 SlotIndex;
 	
@@ -36,8 +34,11 @@ public:
 	
     UPROPERTY()
 	FName PlayerStartTag;
-    /* Field Notifies*/
 	
+    UPROPERTY()
+	FString MapAssetName;
+	
+    /* Field Notifies*/
 	void SetPlayerName(FString InPlayerName);
 	void SetMapName(FString InMapName);
 	void SetPlayerLevel(int32 InPlayerLevel);

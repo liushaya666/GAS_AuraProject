@@ -37,11 +37,16 @@ public:
 	virtual void HideMagicCircle_Implementation() override;
 	virtual void SaveProgress_Implementation(const FName& CheckpointTag) override;
 	/** end Player Interface*/
-
 	
 	/** Combat Interface*/
 	virtual int32 GetPlayerLevel_Implementation() override;
+	virtual void Die(const FVector& DeathImpulse) override;
 	/** end Combat Interface*/
+
+	UPROPERTY(EditDefaultsOnly)
+	float DeathTime = 5.f;
+
+	FTimerHandle DeathTimer;
 
 	void LoadProgress();
 
